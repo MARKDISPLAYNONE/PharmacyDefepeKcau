@@ -1,0 +1,93 @@
+/* Tailwind CSS Import */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Root Variables */
+:root {
+  --background: #f9fafb; /* Slightly darker than pure white */
+  --foreground: #171717;
+  --card: #ffffff; /* Card background stays white */
+  --card-foreground: #171717;
+  --primary: #1e40af;
+  --primary-foreground: #ffffff;
+  --destructive: #ef4444;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #1e40af;
+  --accent-foreground: #ffffff;
+  --border: #d1d5db;
+  --input: #d1d5db;
+  --ring: #3b82f6;
+}
+
+/* Dark Mode Variables */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #1f2937;
+  --card-foreground: #ededed;
+  --primary: #3b82f6;
+  --primary-foreground: #0a0a0a;
+  --destructive: #f87171;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #3b82f6;
+  --accent-foreground: #0a0a0a;
+  --border: #374151;
+  --input: #374151;
+  --ring: #3b82f6;
+  --sidebar: #1f2937;
+  --sidebar-foreground: #ededed;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ededed;
+  --sidebar-accent: #1f2937;
+  --sidebar-accent-foreground: #9ca3af;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* Global Body Styles */
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar Transition */
+main {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar-open main {
+  margin-left: 16rem; /* Width of expanded sidebar */
+}
+
+.sidebar-collapsed main {
+  margin-left: 4rem; /* Width of collapsed sidebar */
+}
+
+/* Base Layer Styles */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
