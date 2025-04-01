@@ -35,9 +35,7 @@ export default function PatientManagementDashboard() {
                     .from('patients')
                     .select('*')
                     .is('deleted_at', null); // Only active patients
-
                 if (activeError) throw activeError;
-
                 setPatients(activePatients || []);
 
                 // Fetch soft-deleted patients (trash bin)
@@ -45,9 +43,7 @@ export default function PatientManagementDashboard() {
                     .from('patients')
                     .select('*')
                     .not('deleted_at', 'is', null); // Only soft-deleted patients
-
                 if (deletedError) throw deletedError;
-
                 setTrashBin(deletedPatients || []);
             } catch (err: unknown) {
                 console.error((err as Error).message || 'An error occurred.');
@@ -55,7 +51,6 @@ export default function PatientManagementDashboard() {
                 setIsLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
@@ -66,9 +61,7 @@ export default function PatientManagementDashboard() {
                 .from('patients')
                 .update({ deleted_at: new Date().toISOString() })
                 .eq('id', id);
-
             if (error) throw error;
-
             setPatients((prevPatients) => prevPatients.filter((p) => p.id !== id));
             setTrashBin((prevTrash) => [...prevTrash, patients.find((p) => p.id === id)!]);
             alert('Patient moved to trash bin.');
@@ -85,9 +78,7 @@ export default function PatientManagementDashboard() {
                 .from('patients')
                 .update({ deleted_at: null })
                 .eq('id', id);
-
             if (error) throw error;
-
             setTrashBin((prevTrash) => prevTrash.filter((p) => p.id !== id));
             alert('Patient restored successfully.');
         } catch (err: unknown) {
@@ -233,7 +224,7 @@ export default function PatientManagementDashboard() {
                         setIsEditModalOpen(false);
                         setEditingPatient(null); // Reset editing state
                     }}
-
+                    editingPatient={editingPatient} // Pass the editingPatient prop
                 />
             )}
         </div>

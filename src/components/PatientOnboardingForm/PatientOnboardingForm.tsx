@@ -20,8 +20,8 @@ interface PatientOnboardingFormProps {
     onClose: () => void;
     editingPatient?: {
         id: string;
-        firstname: string;
-        lastname: string;
+        firstname: string | null;
+        lastname: string | null;
         email: string;
         phone_number: string;
         sex: 'M' | 'F';
@@ -39,7 +39,6 @@ export default function PatientOnboardingForm({
 }: PatientOnboardingFormProps) {
     const [drugCategories, setDrugCategories] = useState<{ id: string; name: string }[]>([]);
     const [drugs, setDrugs] = useState<{ id: string; name: string }[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     const {
         register,
@@ -62,12 +61,10 @@ export default function PatientOnboardingForm({
         const fetchDrugs = async (category: string) => {
             const categoryId = drugCategories.find((cat) => cat.name === category)?.id;
             if (!categoryId) return;
-
             const { data, error } = await supabase
                 .from('drugs')
                 .select('id, name')
                 .eq('drug_category_id', categoryId);
-
             if (error) console.error(error.message);
             else setDrugs(data || []);
         };
@@ -79,16 +76,15 @@ export default function PatientOnboardingForm({
     // Pre-fill form fields if editingPatient is provided
     useEffect(() => {
         if (editingPatient) {
-            setValue('firstname', editingPatient.firstname);
-            setValue('lastname', editingPatient.lastname);
-            setValue('email', editingPatient.email);
-            setValue('phone_number', editingPatient.phone_number);
-            setValue('sex', editingPatient.sex);
-            setValue('drug_category', editingPatient.drug_category);
-            setValue('drug', editingPatient.drug);
-            setValue('purchase_date', editingPatient.purchase_date);
-            setValue('days_until_next_dose', editingPatient.days_until_next_dose);
-            setSelectedCategory(editingPatient.drug_category); // Ensure the correct drug category is selected
+            setValue('firstname', editingPatient.firstname || '');
+            setValue('lastname', editingPatient.lastname || '');
+            setValue('email', editingPatient.email || '');
+            setValue('phone_number', editingPatient.phone_number || '');
+            setValue('sex', editingPatient.sex || '');
+            setValue('drug_category', editingPatient.drug_category || '');
+            setValue('drug', editingPatient.drug || '');
+            setValue('purchase_date', editingPatient.purchase_date || '');
+            setValue('days_until_next_dose', editingPatient.days_until_next_dose || 1);
         }
     }, [editingPatient, setValue]);
 
@@ -118,9 +114,7 @@ export default function PatientOnboardingForm({
                         next_dose_date: nextDoseDate.toISOString(),
                     })
                     .eq('id', editingPatient.id);
-
                 if (error) throw error;
-
                 alert('Patient updated successfully!');
             } else {
                 // Insert new patient
@@ -136,12 +130,9 @@ export default function PatientOnboardingForm({
                     days_until_next_dose: data.days_until_next_dose,
                     next_dose_date: nextDoseDate.toISOString(),
                 });
-
                 if (error) throw error;
-
                 alert('Patient onboarded successfully!');
             }
-
             onClose(); // Close the modal
         } catch (err: unknown) {
             console.error((err as Error).message || 'An error occurred.');
@@ -154,7 +145,9 @@ export default function PatientOnboardingForm({
     return (
         <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="bg-card p-8 rounded-lg shadow-xl w-full max-w-2xl overflow-y-auto max-h-[90vh]">
-                <h2 className="text-2xl font-bold mb-4">{editingPatient ? 'Edit Patient' : 'Onboard Patient'}</h2>
+                <h2 className="text-2xl font-bold mb-4">
+                    {editingPatient ? 'Edit Patient' : 'Onboard Patient'}
+                </h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {/* Form Fields */}
                     <div className="space-y-4">
@@ -195,7 +188,10 @@ export default function PatientOnboardingForm({
                         {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
 
                         {/* Sex */}
-                        <select {...register('sex', { required: 'Sex is required.' })} className="w-full p-2 border rounded">
+                        <select
+                            {...register('sex', { required: 'Sex is required.' })}
+                            className="w-full p-2 border rounded"
+                        >
                             <option value="">Select</option>
                             <option value="M">Male</option>
                             <option value="F">Female</option>
@@ -205,7 +201,6 @@ export default function PatientOnboardingForm({
                         {/* Drug Category */}
                         <select
                             {...register('drug_category', { required: 'Drug category is required.' })}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
                             className="w-full p-2 border rounded"
                         >
                             <option value="">Select</option>
@@ -218,7 +213,10 @@ export default function PatientOnboardingForm({
                         {errors.drug_category && <p className="text-red-500 text-xs">{errors.drug_category.message}</p>}
 
                         {/* Drug */}
-                        <select {...register('drug', { required: 'Drug is required.' })} className="w-full p-2 border rounded">
+                        <select
+                            {...register('drug', { required: 'Drug is required.' })}
+                            className="w-full p-2 border rounded"
+                        >
                             <option value="">Select</option>
                             {drugs.map((drug) => (
                                 <option key={drug.id} value={drug.name}>
